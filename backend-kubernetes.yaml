@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: temperaturas-backend-svc
+  labels:
+    app: temperaturas-backend
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: temperaturas-backend
+    tier: backend
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temperaturas-backend-deploy
+  labels:
+    app: temperaturas-backend
+spec:
+  selector:
+    matchLabels:
+      app: temperaturas-backend
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: temperaturas-backend
+        tier: backend
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: temperaturas-backend
+        image: hermesbl97/temperaturas-backend:v1
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "development"
